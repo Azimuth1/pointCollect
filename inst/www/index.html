@@ -26,13 +26,13 @@ $(document).ready(function() {
 
 $("#convert_button").attr("disabled", "disabled");
 $("#preview_button").attr("disabled", "disabled");
-$("#water_level").attr("disabled", "disabled");
+$("#fov").attr("disabled", "disabled");
 $("#session_url").attr("disabled", "disabled");
 //automatically upload CSV file on change.
-$("#mipfile").on("change", function(){
+$("#pointfile").on("change", function(){
 
   //verify that a file is selected
-  if($("#mipfile")[0].files[0]){
+  if($("#pointfile")[0].files[0]){
 
       $("#successdiv").empty();
       $("#errordiv").empty()
@@ -284,7 +284,7 @@ html, body {
   <div class="project_wrapper">
     <div class="flex-container">
       <div id="user_input_panel" class="flex-item well">
-        <div id="project_title">pointCollect v0.01</div>
+        <div id="project_title">pointCollect v0.02</div>
         <div id="credits">by <a href="http://www.azimuth1.com">Azimuth1</a></div>
         <form role="form" id="uploadform" enctype="multipart/form-data">
           <fieldset id="step_1">
