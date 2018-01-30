@@ -27,10 +27,10 @@ pointCollect <- function(pointfile, fov, plotting){
 
   cl<-maximal.cliques(g,min=2)  #find complete subgraphs
   maxCliqueIDs<-cl[length(cl)][[1]]  #get the IDs of the largest complete subgraph
-  minX<-min(coords[maxCliqueIDs,2])  #define the collection bounds...
-  maxX<-max(coords[maxCliqueIDs,2])
-  minY<-min(coords[maxCliqueIDs,3])
-  maxY<-max(coords[maxCliqueIDs,3])
+  minX<-min(coords[maxCliqueIDs,1])  #define the collection bounds...
+  maxX<-max(coords[maxCliqueIDs,1])
+  minY<-min(coords[maxCliqueIDs,2])
+  maxY<-max(coords[maxCliqueIDs,2])
   collections<-rbind(collections, c(minX,minY,maxX,maxY))
 
   id<-subset(id, !(id %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
