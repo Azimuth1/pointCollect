@@ -6,10 +6,10 @@ pointCollect <- function(pointfile, fov, plotting){
   t<-fov
   id<-1:1050  #vertex IDs
 
-  X<-c(runif(1000,-74,-69),runif(50,-71.3,-71))
-  Y<-c(runif(1000,36,39),runif(50,37.7,38))
-  coords<-cbind(id,X,Y)
-  names(coords)<-c("ID","X","Y")
+  X<-c(runif(100,-74,-69),runif(50,-71.3,-71))
+  Y<-c(runif(100,36,39),runif(50,37.7,38))
+  coords<-cbind(X,Y,id)
+  names(coords)<-c("X","Y","T")
   collections<-NULL
 
 
@@ -40,7 +40,7 @@ pointCollect <- function(pointfile, fov, plotting){
   ###################
 
   tryCatch({
-      plot(coords[,2:3],cex=2,pch=".",col="blue")
+      plot(coords[,1:2],cex=2,pch=".",col="blue",asp=1)
       points(coords[maxCliqueIDs,2:3],col="green")
       rect(minX, minY, maxX, maxY, border="red", )
     }, error = function(e){
