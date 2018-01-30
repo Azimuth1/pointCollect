@@ -39,7 +39,7 @@ pointCollect <- function(pointfile, fov, plotting){
   # PLOT SET TO TRUE
   ###################
 
-    tryCatch({
+  tryCatch({
       plot(coords[,2:3],cex=2,pch=".",col="blue")
       points(coords[maxCliqueIDs,2:3],col="green")
       rect(minX, minY, maxX, maxY, border="red", )
@@ -53,7 +53,4 @@ pointCollect <- function(pointfile, fov, plotting){
   ###################
     return(coords)
   }
-  }
-
-
 }
