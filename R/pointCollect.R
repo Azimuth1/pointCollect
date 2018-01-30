@@ -1,4 +1,6 @@
 pointCollect <- function(pointfile, fov, plotting){
+  data <- read.csv(pointfile, header=T, quote="\"", sep="\t", na.strings = "n/a", row.names=NULL)
+
   t<-0.2   #threshold for complete link clustering
   fov<-t
   id<-1:1050  #vertex IDs
