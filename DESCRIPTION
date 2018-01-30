@@ -1,4 +1,4 @@
-Package: mihptcheck
+Package: pointCollect
 Type: Package
 Title: OpenCPU MIP Plotting and Conversion Application
 Version: 0.1.0
