@@ -4,7 +4,8 @@ pointCollect <- function(pointfile, fov, plotting){
   #t<-0.2   #threshold for complete link clustering
   fov<-as.numeric(fov)
   t<-fov
-  id<-1:1050  #vertex IDs
+  stop(t)
+  id<-1:150  #vertex IDs
 
   X<-c(runif(100,-74,-69),runif(50,-71.3,-71))
   Y<-c(runif(100,36,39),runif(50,37.7,38))
@@ -19,7 +20,6 @@ pointCollect <- function(pointfile, fov, plotting){
     for (j in id){
       if (((X[i]-X[j])^2+(Y[i]-Y[j])^2)<=t^2){
         g<-add.edges(g,c(id[i],id[j]))
-
       }
     }
   }

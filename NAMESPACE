@@ -1,3 +1,4 @@
 export(pointCollect)
+export(zip_validation)
 import(ggplot2)
 import(igraph)
