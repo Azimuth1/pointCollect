@@ -11,7 +11,6 @@
 <script src="scripts/opencpu-0.4.js"> </script>
 <script src="scripts/jszip-2.6.1.min.js"> </script>
 <script src="scripts/FileSaver.js"> </script>
-<script src="scripts/jszip-utils.min.js"> </script>
 
 <link href="scripts/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="scripts/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
@@ -41,20 +40,17 @@ $("#pointfile").on("change", function(){
       //Upload and validate the data
       //////////////////////////////
 
-      var req = ocpu.call("zip_validation", {
-          pointfile : $("#pointfile")[0].files[0]
       }, function(session){
           $("#session_url").removeAttr("disabled");
           $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
           $("#convert_button").attr("href", session.getLoc())
-          $("#water_level").removeAttr("disabled");
+          $("#fov").removeAttr("disabled");
           $("#convert_button").removeAttr("disabled");
           $("#preview_button").removeAttr("disabled");
           $("#step_2").css("opacity", 1);
           $("#step_3").css("opacity", 1);
 
       }).fail(function(jqXHR){
-
           $("#step_2").css("opacity", 0.2);
           $("#step_3").css("opacity", 0.2);
           errormsg(jqXHR.responseText);
@@ -134,45 +130,6 @@ $("#preview_button").on("click", function(){
 
 });
 
-//Javascript function using jszip.j / filesaver.js
-//to package .zip output
-function update_zipfile_input(session){
-
-    //////////////////////////////
-    //Update .zipfile
-    //////////////////////////////
-
-    csv_file = session.getLoc()+'R/.val/csv'
-    data_file = $("#pointfile")[0].files[0];
-    file_names = session.getLoc()+'files'
-
-    $.get(file_names, function(f){
-
-      file_list = f.split('\n')
-
-      zipname = file_list.filter(function(d){
-        if(d.substr(d.length - 3)=="zip"){
-          return d
-        }
-      });
-
-      filename = zipname[0].substr(0, zipname[0].length - 4)
-
-      JSZipUtils.getBinaryContent(file_names + '/' + zipname[0], function(err, data) {
-
-        if(err) {throw err;}// or handle err
-
-        zip = new JSZip(data);
-
-        $.get(csv_file, function(d){
-            var new_file = d.replace(/["]/g, '').replace(/123qwe456rty/g, "n\/a").replace(/[,]/g, '\t')
-            zip.file(filename+'.mhp', new_file)
-            var content = zip.generate({type:"blob"});
-            saveAs(content, zipname[0]);
-        });
-      });
-  });
-}
 
 $(document).ajaxStart(function() {
   $(".progress").show();
