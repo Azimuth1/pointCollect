@@ -9,19 +9,19 @@ pointCollect <- function(pointfile, fov, plotting){
 #  X<-c(runif(100,-74,-69),runif(50,-71.3,-71))
 #  Y<-c(runif(100,36,39),runif(50,37.7,38))
 #  coords<-cbind(X,Y,id)
-#  names(coords)<-c("X","Y","T")
+  names(data)<-c("ID","X","Y","T")
   collections<-NULL
 
 
 coords<-data
   g<-graph.empty(n=0,directed=FALSE) + vertices(data$id)
 
-  for (i in data$id){
-    for (j in data$id){
+  for (i in data$ID){
+    for (j in data$ID){
       #if (((X[i]-X[j])^2+(Y[i]-Y[j])^2)<=t^2){
       if (i != j){
         if (max(abs(data$X[i]-data$X[j]),abs(data$Y[i]-data$Y[j]))<=fov){
-          g<-add.edges(g,c(data$id[i],data$id[j]))
+          g<-add.edges(g,c(data$ID[i],data$ID[j]))
         }
       }
     }
@@ -38,7 +38,7 @@ coords<-data
   maxY<-max(coords[maxCliqueIDs,3])
   collections<-rbind(collections, c(minX,minY,maxX,maxY))
 
-  id<-subset(data$id, !(data$id %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
+  id<-subset(data$ID, !(data$ID %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
 
   if(plotting==TRUE) {
   ###################
