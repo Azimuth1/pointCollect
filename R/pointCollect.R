@@ -18,7 +18,8 @@ pointCollect <- function(pointfile, fov, plotting){
 
   for (i in id){
     for (j in id){
-      if (((X[i]-X[j])^2+(Y[i]-Y[j])^2)<=t^2){
+      #if (((X[i]-X[j])^2+(Y[i]-Y[j])^2)<=t^2){
+      if (max(abs(X[i]-X[j]),abs(Y[i]-Y[j]))<=t){
         g<-add.edges(g,c(id[i],id[j]))
       }
     }
@@ -40,7 +41,7 @@ pointCollect <- function(pointfile, fov, plotting){
   ###################
 
   tryCatch({
-      plot(coords[,1:2],cex=2,pch=".",col="blue",asp=1)
+      plot(coords[,1:2],cex=2,pch=".",col="blue",asp=1, main=paste0(cl," maximal groups found"))
       points(coords[maxCliqueIDs,2:3],col="green")
       rect(minX, minY, maxX, maxY, border="red", )
     }, error = function(e){
