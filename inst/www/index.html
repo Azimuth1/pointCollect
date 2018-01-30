@@ -110,7 +110,7 @@ $(document).ready(function() {
 
       //create the plot area on the plotdiv element
       var req = $("#plotdiv").rplot("pointCollect", {
-        pointfile : $("#coords")[0].files[0],
+        pointfile : $("#pointfile")[0].files[0],
         fov : $('#fov').val(),
         plotting: 'TRUE'
       }, function(session){
