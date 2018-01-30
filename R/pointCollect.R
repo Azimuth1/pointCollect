@@ -19,16 +19,18 @@ coords<-data
   for (i in data$id){
     for (j in data$id){
       #if (((X[i]-X[j])^2+(Y[i]-Y[j])^2)<=t^2){
-      if (max(abs(data$X[i]-data$X[j]),abs(data$Y[i]-data$Y[j]))<=fov){
-        g<-add.edges(g,c(data$id[i],data$id[j]))
+      if (i != j){
+        if (max(abs(data$X[i]-data$X[j]),abs(data$Y[i]-data$Y[j]))<=fov){
+          g<-add.edges(g,c(data$id[i],data$id[j]))
+        }
       }
     }
   }
 
   cl<-maximal.cliques(g,min=2)  #find complete subgraphs
-  stop(length(cl))
+  stop(vcount(g))
 
-  
+
   maxCliqueIDs<-cl[length(cl)][[1]]  #get the IDs of the largest complete subgraph
   minX<-min(coords[maxCliqueIDs,2])  #define the collection bounds...
   maxX<-max(coords[maxCliqueIDs,2])
@@ -36,7 +38,7 @@ coords<-data
   maxY<-max(coords[maxCliqueIDs,3])
   collections<-rbind(collections, c(minX,minY,maxX,maxY))
 
-  id<-subset(id, !(id %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
+  id<-subset(data$id, !(data$id %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
 
   if(plotting==TRUE) {
   ###################
