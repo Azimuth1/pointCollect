@@ -41,7 +41,7 @@ pointCollect <- function(pointfile, fov, plotting){
   ###################
 
   tryCatch({
-      plot(coords[,1:2],cex=2,pch=".",col="blue",asp=1, main=paste0(cl," maximal groups found"))
+      plot(coords[,1:2],cex=2,pch=".",col="blue",asp=1, main=paste0(length(cl)," maximal groups found"))
       points(coords[maxCliqueIDs,2:3],col="green")
       rect(minX, minY, maxX, maxY, border="red", )
     }, error = function(e){
