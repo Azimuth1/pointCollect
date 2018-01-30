@@ -42,7 +42,7 @@ $("#mipfile").on("change", function(){
       //////////////////////////////
 
       var req = ocpu.call("zip_validation", {
-          mipfile : $("#mipfile")[0].files[0]
+          pointfile : $("#pointfile")[0].files[0]
       }, function(session){
           $("#session_url").removeAttr("disabled");
           $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
@@ -84,9 +84,9 @@ $("#convert_button").on("click", function(){
     //////////////////////////////
     //Water level calculations
     //////////////////////////////
-    var req = ocpu.call("mip_data_plot", {
-      mipfile : $("#mipfile")[0].files[0],
-      water_level : $('#water_level').val(),
+    var req = ocpu.call("pointCollect", {
+      mipfile : $("#pointfile")[0].files[0],
+      water_level : $('#fov').val(),
       plotting : 'FALSE'
     }, function(session){
       //success
@@ -101,7 +101,7 @@ $("#convert_button").on("click", function(){
 });
 
   //Check if user changes water level input
-  document.getElementById("water_level").addEventListener('change', function(){
+  document.getElementById("fov").addEventListener('change', function(){
       $("#preview_button").removeAttr("disabled");
       $("#convert_button").removeAttr("disabled");
   });
@@ -143,8 +143,7 @@ function update_zipfile_input(session){
     //////////////////////////////
 
     csv_file = session.getLoc()+'R/.val/csv'
-    tab_file = session.getLoc()+'R/.val/tab'
-    data_file = $("#mipfile")[0].files[0];
+    data_file = $("#pointfile")[0].files[0];
     file_names = session.getLoc()+'files'
 
     $.get(file_names, function(f){
