@@ -23,122 +23,120 @@
 <script type="text/javascript">
 $(document).ready(function() {
 
-$("#convert_button").attr("disabled", "disabled");
-$("#preview_button").attr("disabled", "disabled");
-$("#fov").attr("disabled", "disabled");
-$("#session_url").attr("disabled", "disabled");
-//automatically upload CSV file on change.
-$("#pointfile").on("change", function(){
+  $("#convert_button").attr("disabled", "disabled");
+  $("#preview_button").attr("disabled", "disabled");
+  $("#fov").attr("disabled", "disabled");
+  $("#session_url").attr("disabled", "disabled");
+  //automatically upload CSV file on change.
+  $("#pointfile").on("change", function(){
 
-  //verify that a file is selected
-  if($("#pointfile"[0].files[0])){
+    //verify that a file is selected
+    if($("#pointfile"[0].files[0])){
 
-      $("#successdiv").empty();
-      $("#errordiv").empty()
+        $("#successdiv").empty();
+        $("#errordiv").empty()
 
 
-      var req = ocpu.call("csv_validation", {
-            pointfile : $("#pointfile")[0].files[0]
+        var req = ocpu.call("csv_validation", {
+              pointfile : $("#pointfile")[0].files[0]
+        }, function(session){
+            $("#session_url").removeAttr("disabled");
+            $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
+            $("#convert_button").attr("href", session.getLoc())
+            $("#fov").removeAttr("disabled");
+            $("#convert_button").removeAttr("disabled");
+            $("#preview_button").removeAttr("disabled");
+            $("#step_2").css("opacity", 1);
+            $("#step_3").css("opacity", 1);
+
+        }).fail(function(jqXHR){
+            $("#step_2").css("opacity", 0.2);
+            $("#step_3").css("opacity", 0.2);
+            errormsg(jqXHR.responseText);
+
+        })
+      }
+  });
+
+  //R output to popup
+  function successmsg(text){
+      $("#successdiv").empty().append('<div class="alert alert-success alert-dismissable"><a href="#" class="close" data-dismiss="alert">&times;</a>' + text + '</div>');
+  }
+
+  //R output to popup
+  function errormsg(text){
+      $("#convert_button").attr("disabled", "disabled");
+      $("#fov").attr("disabled", "disabled");
+      $("#errordiv").empty().append('<div class="alert alert-danger alert-dismissable"><a href="#" class="close" data-dismiss="alert">&times;</a>' + text + '</div>');
+  }
+
+  function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  $("#convert_button").on("click", function(){
+
+      //////////////////////////////
+      //fov level calculations
+      //////////////////////////////
+      var req = ocpu.call("pointCollect", {
+        pointfile : $("#pointfile")[0].files[0],
+        fov : $('#fov').val(),
+        plotting : 'FALSE'
       }, function(session){
-          $("#session_url").removeAttr("disabled");
-          $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
-          $("#convert_button").attr("href", session.getLoc())
-          $("#fov").removeAttr("disabled");
-          $("#convert_button").removeAttr("disabled");
-          $("#preview_button").removeAttr("disabled");
-          $("#step_2").css("opacity", 1);
-          $("#step_3").css("opacity", 1);
-
+        //success
+        $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
+        update_zipfile_input(session)
+        $("#convert_button").attr("disabled", "disabled");
       }).fail(function(jqXHR){
-          $("#step_2").css("opacity", 0.2);
-          $("#step_3").css("opacity", 0.2);
-          errormsg(jqXHR.responseText);
-
-      })
-    }
-});
-
-//R output to popup
-function successmsg(text){
-    $("#successdiv").empty().append('<div class="alert alert-success alert-dismissable"><a href="#" class="close" data-dismiss="alert">&times;</a>' + text + '</div>');
-}
-
-//R output to popup
-function errormsg(text){
-    $("#convert_button").attr("disabled", "disabled");
-    $("#fov").attr("disabled", "disabled");
-    $("#errordiv").empty().append('<div class="alert alert-danger alert-dismissable"><a href="#" class="close" data-dismiss="alert">&times;</a>' + text + '</div>');
-}
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-$("#convert_button").on("click", function(){
-
-    //////////////////////////////
-    //fov level calculations
-    //////////////////////////////
-    var req = ocpu.call("pointCollect", {
-      pointfile : $("#pointfile")[0].files[0],
-      fov : $('#fov').val(),
-      plotting : 'FALSE'
-    }, function(session){
-      //success
-      $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
-      update_zipfile_input(session)
-      $("#convert_button").attr("disabled", "disabled");
-    }).fail(function(jqXHR){
-       //failure
-       $("#convert_button").attr("disabled", "disabled");
-       errormsg(jqXHR.responseText);
-      })
-});
-
-  //Check if user changes fov level input
-  document.getElementById("fov").addEventListener('change', function(){
-      $("#preview_button").removeAttr("disabled");
-      $("#convert_button").removeAttr("disabled");
+        //failure
+        $("#convert_button").attr("disabled", "disabled");
+        errormsg(jqXHR.responseText);
+        })
   });
 
+    //Check if user changes fov level input
+    document.getElementById("fov").addEventListener('change', function(){
+        $("#preview_button").removeAttr("disabled");
+        $("#convert_button").removeAttr("disabled");
+    });
 
-$("#preview_button").on("click", function(){
 
-    //////////////////////////////
-    //Plot Preview
-    //////////////////////////////
+  $("#preview_button").on("click", function(){
 
-    //create the plot area on the plotdiv element
-    var req = $("#plotdiv").rplot("pointCollect", {
-      pointfile : $("#coords")[0].files[0],
-      fov : $('#fov').val(),
-      plotting: 'TRUE'
-    }, function(session){
-      //configure inputs on/off
-      //success
-      $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
-      $("#preview_button").attr("disabled", "disabled");
-      $("#convert_button").removeAttr("disabled");
-    }).fail(function(jqXHR){
-      //failure
-      $("#preview_button").removeAttr("disabled");
-      $(".input-medium").removeAttr("disabled");
-      $("#convert_button").attr("disabled", "disabled");
-      errormsg(jqXHR.responseText);
-     })
+      //////////////////////////////
+      //Plot Preview
+      //////////////////////////////
+
+      //create the plot area on the plotdiv element
+      var req = $("#plotdiv").rplot("pointCollect", {
+        pointfile : $("#coords")[0].files[0],
+        fov : $('#fov').val(),
+        plotting: 'TRUE'
+      }, function(session){
+        //configure inputs on/off
+        //success
+        $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
+        $("#preview_button").attr("disabled", "disabled");
+        $("#convert_button").removeAttr("disabled");
+      }).fail(function(jqXHR){
+        //failure
+        $("#preview_button").removeAttr("disabled");
+        $(".input-medium").removeAttr("disabled");
+        $("#convert_button").attr("disabled", "disabled");
+        errormsg(jqXHR.responseText);
+      })
+    });
+
+    $(document).ajaxStart(function() {
+      $(".progress").show();
+    });
+
+    $(document).ajaxStop(function() {
+      $(".progress").hide();
+    });
+
   });
-});
-
-
-$(document).ajaxStart(function() {
-  $(".progress").show();
-});
-
-$(document).ajaxStop(function() {
-  $(".progress").hide();
-});
-
-});
 
 </script>
 
