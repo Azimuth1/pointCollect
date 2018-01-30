@@ -4,12 +4,12 @@ pointCollect <- function(pointfile, fov, plotting){
   #t<-0.2   #threshold for complete link clustering
   fov<-as.numeric(fov)
 
-  id<-1:150  #vertex IDs
+#  id<-1:150  #vertex IDs
 
-  X<-c(runif(100,-74,-69),runif(50,-71.3,-71))
-  Y<-c(runif(100,36,39),runif(50,37.7,38))
-  coords<-cbind(X,Y,id)
-  names(coords)<-c("X","Y","T")
+#  X<-c(runif(100,-74,-69),runif(50,-71.3,-71))
+#  Y<-c(runif(100,36,39),runif(50,37.7,38))
+#  coords<-cbind(X,Y,id)
+#  names(coords)<-c("X","Y","T")
   collections<-NULL
 
 
@@ -26,6 +26,9 @@ coords<-data
   }
 
   cl<-maximal.cliques(g,min=2)  #find complete subgraphs
+  stop(length(cl))
+
+  
   maxCliqueIDs<-cl[length(cl)][[1]]  #get the IDs of the largest complete subgraph
   minX<-min(coords[maxCliqueIDs,2])  #define the collection bounds...
   maxX<-max(coords[maxCliqueIDs,2])
@@ -52,6 +55,6 @@ coords<-data
   ###################
   # PLOT SET TO FALSE
   ###################
-    return(coords)
+    return(collections)
   }
 }
