@@ -1,9 +1,11 @@
 pointCollect <- function(pointfile, fov, plotting){
-  data <- read.csv(pointfile, header=T, quote="\"", sep="\t", na.strings = "n/a", row.names=NULL)
+  data <- read.csv(pointfile, header=T, row.names=NULL)
 
-  t<-0.2   #threshold for complete link clustering
-  fov<-t
+  #t<-0.2   #threshold for complete link clustering
+  fov<-as.numeric(fov)
+  t<-fov
   id<-1:1050  #vertex IDs
+
   X<-c(runif(1000,-74,-69),runif(50,-71.3,-71))
   Y<-c(runif(1000,36,39),runif(50,37.7,38))
   coords<-cbind(id,X,Y)
@@ -32,8 +34,26 @@ pointCollect <- function(pointfile, fov, plotting){
 
   id<-subset(id, !(id %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
 
+  if(plotting==TRUE) {
+  ###################
+  # PLOT SET TO TRUE
+  ###################
 
-  plot(coords[,2:3],cex=2,pch=".",col="blue")
-  points(coords[maxCliqueIDs,2:3],col="green")
-  rect(minX, minY, maxX, maxY, border="red", )
+    tryCatch({
+      plot(coords[,2:3],cex=2,pch=".",col="blue")
+      points(coords[maxCliqueIDs,2:3],col="green")
+      rect(minX, minY, maxX, maxY, border="red", )
+    }, error = function(e){
+        stop(e);
+    })
+
+  }else{
+  ###################
+  # PLOT SET TO FALSE
+  ###################
+    return(coords)
+  }
+  }
+
+
 }
