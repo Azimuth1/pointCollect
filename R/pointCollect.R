@@ -3,7 +3,6 @@ pointCollect <- function(pointfile, fov, plotting){
 
   #t<-0.2   #threshold for complete link clustering
   fov<-as.numeric(fov)
-  t<-max(0.2,fov)
 
   id<-1:150  #vertex IDs
 
@@ -14,23 +13,24 @@ pointCollect <- function(pointfile, fov, plotting){
   collections<-NULL
 
 
-  g<-graph.empty(n=0,directed=FALSE) + vertices(id)
+coords<-data
+  g<-graph.empty(n=0,directed=FALSE) + vertices(data$id)
 
-  for (i in id){
-    for (j in id){
+  for (i in data$id){
+    for (j in data$id){
       #if (((X[i]-X[j])^2+(Y[i]-Y[j])^2)<=t^2){
-      if (max(abs(X[i]-X[j]),abs(Y[i]-Y[j]))<=t){
-        g<-add.edges(g,c(id[i],id[j]))
+      if (max(abs(data$X[i]-data$X[j]),abs(data$Y[i]-data$Y[j]))<=fov){
+        g<-add.edges(g,c(data$id[i],data$id[j]))
       }
     }
   }
 
   cl<-maximal.cliques(g,min=2)  #find complete subgraphs
   maxCliqueIDs<-cl[length(cl)][[1]]  #get the IDs of the largest complete subgraph
-  minX<-min(coords[maxCliqueIDs,1])  #define the collection bounds...
-  maxX<-max(coords[maxCliqueIDs,1])
-  minY<-min(coords[maxCliqueIDs,2])
-  maxY<-max(coords[maxCliqueIDs,2])
+  minX<-min(coords[maxCliqueIDs,2])  #define the collection bounds...
+  maxX<-max(coords[maxCliqueIDs,2])
+  minY<-min(coords[maxCliqueIDs,3])
+  maxY<-max(coords[maxCliqueIDs,3])
   collections<-rbind(collections, c(minX,minY,maxX,maxY))
 
   id<-subset(id, !(id %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
@@ -41,7 +41,7 @@ pointCollect <- function(pointfile, fov, plotting){
   ###################
 
   tryCatch({
-      plot(coords[,1:2],cex=2,pch=".",col="blue",asp=1, main=paste0(length(cl)," maximal groups found"))
+      plot(coords[,2:3],cex=2,pch=".",col="blue",asp=1, main=paste0(length(cl)," scenes will capture ", 120, " targets."))
       points(coords[maxCliqueIDs,2:3],col="green")
       rect(minX, minY, maxX, maxY, border="red", )
     }, error = function(e){
