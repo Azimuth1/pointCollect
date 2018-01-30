@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Spatiotemporal point collection - greedy algorithm</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<!-- ocpu library -->
+<script src="scripts/jquery-1.10.2.min.js"> </script>
+<script src="scripts/opencpu-0.4.js"> </script>
+<script src="scripts/jszip-2.6.1.min.js"> </script>
+<script src="scripts/FileSaver.js"> </script>
+<script src="scripts/jszip-utils.min.js"> </script>
+
+<link href="scripts/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="scripts/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+<link href="scripts/jqueryui/css/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet" media="screen">
+<script src="scripts/bootstrap/js/bootstrap.js"> </script>
+<script src="scripts/jqueryui/jquery-ui-1.10.3.custom.js"> </script>
+
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+$("#convert_button").attr("disabled", "disabled");
+$("#preview_button").attr("disabled", "disabled");
+$("#water_level").attr("disabled", "disabled");
+$("#session_url").attr("disabled", "disabled");
+//automatically upload CSV file on change.
+$("#mipfile").on("change", function(){
+
+  //verify that a file is selected
+  if($("#mipfile")[0].files[0]){
+
+      $("#successdiv").empty();
+      $("#errordiv").empty()
+
+      //////////////////////////////
+      //Upload and validate the data
+      //////////////////////////////
+
+      var req = ocpu.call("zip_validation", {
+          mipfile : $("#mipfile")[0].files[0]
+      }, function(session){
+          $("#session_url").removeAttr("disabled");
+          $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
+          $("#convert_button").attr("href", session.getLoc())
+          $("#water_level").removeAttr("disabled");
+          $("#convert_button").removeAttr("disabled");
+          $("#preview_button").removeAttr("disabled");
+          $("#step_2").css("opacity", 1);
+          $("#step_3").css("opacity", 1);
+
+      }).fail(function(jqXHR){
+
+          $("#step_2").css("opacity", 0.2);
+          $("#step_3").css("opacity", 0.2);
+          errormsg(jqXHR.responseText);
+
+      })
+    }
+});
+
+//R output to popup
+function successmsg(text){
+    $("#successdiv").empty().append('<div class="alert alert-success alert-dismissable"><a href="#" class="close" data-dismiss="alert">&times;</a>' + text + '</div>');
+}
+
+//R output to popup
+function errormsg(text){
+    $("#convert_button").attr("disabled", "disabled");
+    $("#water_level").attr("disabled", "disabled");
+    $("#errordiv").empty().append('<div class="alert alert-danger alert-dismissable"><a href="#" class="close" data-dismiss="alert">&times;</a>' + text + '</div>');
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+$("#convert_button").on("click", function(){
+
+    //////////////////////////////
+    //Water level calculations
+    //////////////////////////////
+    var req = ocpu.call("mip_data_plot", {
+      mipfile : $("#mipfile")[0].files[0],
+      water_level : $('#water_level').val(),
+      plotting : 'FALSE'
+    }, function(session){
+      //success
+      $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
+      update_zipfile_input(session)
+      $("#convert_button").attr("disabled", "disabled");
+    }).fail(function(jqXHR){
+       //failure
+       $("#convert_button").attr("disabled", "disabled");
+       errormsg(jqXHR.responseText);
+      })
+});
+
+  //Check if user changes water level input
+  document.getElementById("water_level").addEventListener('change', function(){
+      $("#preview_button").removeAttr("disabled");
+      $("#convert_button").removeAttr("disabled");
+  });
+
+
+$("#preview_button").on("click", function(){
+
+    //////////////////////////////
+    //Plot Preview
+    //////////////////////////////
+
+    //create the plot area on the plotdiv element
+    var req = $("#plotdiv").rplot("pointCollect", {
+      mipfile : $("#coords")[0].files[0],
+      water_level : $('#fov').val(),
+      plotting: 'TRUE'
+    }, function(session){
+      //configure inputs on/off
+      //success
+      $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
+      $("#preview_button").attr("disabled", "disabled");
+      $("#convert_button").removeAttr("disabled");
+    }).fail(function(jqXHR){
+      //failure
+      $("#preview_button").removeAttr("disabled");
+      $(".input-medium").removeAttr("disabled");
+      $("#convert_button").attr("disabled", "disabled");
+      errormsg(jqXHR.responseText);
+     })
+
+});
+
+//Javascript function using jszip.j / filesaver.js
+//to package .zip output
+function update_zipfile_input(session){
+
+    //////////////////////////////
+    //Update .zipfile
+    //////////////////////////////
+
+    csv_file = session.getLoc()+'R/.val/csv'
+    tab_file = session.getLoc()+'R/.val/tab'
+    data_file = $("#mipfile")[0].files[0];
+    file_names = session.getLoc()+'files'
+
+    $.get(file_names, function(f){
+
+      file_list = f.split('\n')
+
+      zipname = file_list.filter(function(d){
+        if(d.substr(d.length - 3)=="zip"){
+          return d
+        }
+      });
+
+      filename = zipname[0].substr(0, zipname[0].length - 4)
+
+      JSZipUtils.getBinaryContent(file_names + '/' + zipname[0], function(err, data) {
+
+        if(err) {throw err;}// or handle err
+
+        zip = new JSZip(data);
+
+        $.get(csv_file, function(d){
+            var new_file = d.replace(/["]/g, '').replace(/123qwe456rty/g, "n\/a").replace(/[,]/g, '\t')
+            zip.file(filename+'.mhp', new_file)
+            var content = zip.generate({type:"blob"});
+            saveAs(content, zipname[0]);
+        });
+      });
+  });
+}
+
+$(document).ajaxStart(function() {
+  $(".progress").show();
+});
+
+$(document).ajaxStop(function() {
+  $(".progress").hide();
+});
+
+});
+
+</script>
+
+<style>
+html, body {
+	background-color: #222;
+	height: 100%;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+/* needs improvement */
+
+#azimuth_warning {
+	padding: 20px;
+	max-width: 380px;
+}
+#step_2 {
+	opacity: 0.2;
+}
+#step_3 {
+	opacity: 0.2;
+}
+#user_input_panel {
+	font-family: 'Source Sans Pro', sans-serif;
+	margin-left: 20px;
+	height: 540px;
+  width: 420px;
+	margin-bottom: 0px !important;
+}
+#plotdiv {
+	width: 850px;
+	height: 850px;
+	margin-left: 20px;
+	margin-bottom: 0px !important;
+}
+.plot_btn {
+	font-size: 10px !important;
+	margin-left: 6px !important;
+}
+#project_title {
+	font-size: 30px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #000000;
+}
+#water_level {
+	width: 70px;
+	margin-left: 5px;
+	padding-left: 5px;
+	font-size: 12px !important;
+}
+#logo {
+	padding: 30px;
+	max-width: 100%;
+	width: 540px;
+	/* you can use % */
+	height: auto;
+}
+#mipfile {
+	max-width: 250px;
+}
+.progress {
+	display: none;
+}
+.flex-container {
+	display: inline-flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-content: flex-start;
+	align-items: center;
+}
+.flex-item:nth-child(1) {
+	order: 0;
+	flex: 0 1 auto;
+	align-self: stretch;
+}
+.flex-item:nth-child(2) {
+	order: 0;
+	flex: 0 1 auto;
+	align-self: center;
+}
+.custom_legend {
+	font-size: 14px;
+}
+.project_wrapper {
+	margin-top: 20px;
+}
+
+#session_url{
+  position: absolute;
+  top: 20px;
+  left: 360px;
+}
+</style>
+
+</head>
+
+<body>
+  <div class="project_wrapper">
+    <div class="flex-container">
+      <div id="user_input_panel" class="flex-item well">
+        <div id="project_title">pointCollect v0.01</div>
+        <div id="credits">by <a href="http://www.azimuth1.com">Azimuth1</a></div>
+        <form role="form" id="uploadform" enctype="multipart/form-data">
+          <fieldset id="step_1">
+            <legend class="custom_legend">(1) Load CSV point data (with X,Y,T column headings.)</legend>
+              <div class="form-group">
+                 <input type="file" id="mipfile">
+              </div>
+          </fieldset>
+          <fieldset id="step_2">
+            <legend class="custom_legend">(2) Enter the diameter or width of your field of view.</legend>
+            <div class="form-group">
+              <label>Field of View</label>
+              <input class="input-medium" id="water_level" type="number" id="max" step="0.05" min="0" max="100" value="10" />
+              <button id="preview_button" type="button" class="btn btn-primary btn-sm" disabled="disabled">Plot Preview</button>
+            </div>
+          </fieldset>
+            <fieldset id="step_3">
+              <legend class="custom_legend">(3) Download Optimal collection plan</legend>
+            <br>
+              <button id="convert_button" type="button" class="btn btn-primary" disabled="disabled">Download</button>
+            </fieldset>
+        </form>
+              <!-- R Relayed Message and Progress Information -->
+      <div id="tips"><b>Pro tip:</b> You can go straight to the download without previewing if you choose.</div>
+      <div id="azimuth_warning">
+        <div id="successdiv"></div>
+        <div id="errordiv"></div>
+        <div class="progress progress-striped active">
+          <div class="progress-bar" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+        </div>
+      </div>
+      <a id="session_url">Session URL</a>
+    </div>
+    <div id="plotdiv" class="flex-item well"></div>
+  </div>
+
+  </div>
+</body>
+</html>
