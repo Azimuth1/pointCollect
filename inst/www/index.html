@@ -77,11 +77,11 @@ function getRandomInt(min, max) {
 $("#convert_button").on("click", function(){
 
     //////////////////////////////
-    //Water level calculations
+    //fov level calculations
     //////////////////////////////
     var req = ocpu.call("pointCollect", {
-      mipfile : $("#pointfile")[0].files[0],
-      water_level : $('#fov').val(),
+      pointfile : $("#pointfile")[0].files[0],
+      fov : $('#fov').val(),
       plotting : 'FALSE'
     }, function(session){
       //success
@@ -95,7 +95,7 @@ $("#convert_button").on("click", function(){
       })
 });
 
-  //Check if user changes water level input
+  //Check if user changes fov level input
   document.getElementById("fov").addEventListener('change', function(){
       $("#preview_button").removeAttr("disabled");
       $("#convert_button").removeAttr("disabled");
@@ -110,8 +110,8 @@ $("#preview_button").on("click", function(){
 
     //create the plot area on the plotdiv element
     var req = $("#plotdiv").rplot("pointCollect", {
-      mipfile : $("#coords")[0].files[0],
-      water_level : $('#fov').val(),
+      pointfile : $("#coords")[0].files[0],
+      fov : $('#fov').val(),
       plotting: 'TRUE'
     }, function(session){
       //configure inputs on/off
@@ -126,7 +126,7 @@ $("#preview_button").on("click", function(){
       $("#convert_button").attr("disabled", "disabled");
       errormsg(jqXHR.responseText);
      })
-
+  });
 });
 
 
@@ -184,7 +184,7 @@ html, body {
 	padding-bottom: 15px;
 	border-bottom: 1px solid #000000;
 }
-#water_level {
+#fov {
 	width: 70px;
 	margin-left: 5px;
 	padding-left: 5px;
@@ -197,7 +197,7 @@ html, body {
 	/* you can use % */
 	height: auto;
 }
-#mipfile {
+#pointfile {
 	max-width: 250px;
 }
 .progress {
