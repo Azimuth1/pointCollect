@@ -31,7 +31,7 @@ $("#session_url").attr("disabled", "disabled");
 $("#pointfile").on("change", function(){
 
   //verify that a file is selected
-  if($("#pointfile")){
+  if($("#pointfile"[0])){
 
       $("#successdiv").empty();
       $("#errordiv").empty()
@@ -63,7 +63,7 @@ function successmsg(text){
 //R output to popup
 function errormsg(text){
     $("#convert_button").attr("disabled", "disabled");
-    $("#water_level").attr("disabled", "disabled");
+    $("#fov").attr("disabled", "disabled");
     $("#errordiv").empty().append('<div class="alert alert-danger alert-dismissable"><a href="#" class="close" data-dismiss="alert">&times;</a>' + text + '</div>');
 }
 
@@ -237,7 +237,7 @@ html, body {
   <div class="project_wrapper">
     <div class="flex-container">
       <div id="user_input_panel" class="flex-item well">
-        <div id="project_title">pointCollect v0.05</div>
+        <div id="project_title">pointCollect v0.06</div>
         <div id="credits">by <a href="http://www.azimuth1.com">Azimuth1</a></div>
         <form role="form" id="uploadform" enctype="multipart/form-data">
           <fieldset id="step_1">
