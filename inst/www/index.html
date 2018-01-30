@@ -31,11 +31,14 @@ $("#session_url").attr("disabled", "disabled");
 $("#pointfile").on("change", function(){
 
   //verify that a file is selected
-  if($("#pointfile"[0])){
+  if($("#pointfile"[0].files[0])){
 
       $("#successdiv").empty();
       $("#errordiv").empty()
 
+
+      var req = ocpu.call("csv_validation", {
+            pointfile : $("#pointfile")[0].files[0]
       }, function(session){
           $("#session_url").removeAttr("disabled");
           $("#session_url").attr("href", session.getLoc()).attr("target","_blank")
