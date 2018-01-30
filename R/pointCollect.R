@@ -28,7 +28,7 @@ coords<-data
   }
 
   cl<-maximal.cliques(g,min=2)  #find complete subgraphs
-  stop(vcount(g))
+  #stop(vcount(g))
 
 
   maxCliqueIDs<-cl[length(cl)][[1]]  #get the IDs of the largest complete subgraph
