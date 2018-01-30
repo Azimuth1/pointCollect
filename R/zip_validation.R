@@ -3,6 +3,6 @@ csv_validation <- function(pointfile, ...){
     # check if input is .CSV
     stop('Uploaded data needs to be CSV file. ');
   }else{
-    fname = pointfile$Name
+    #fname = pointfile$Name
   }
 }
