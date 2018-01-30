@@ -14,7 +14,7 @@ pointCollect <- function(pointfile, fov, plotting){
 
 
 coords<-data
-  g<-graph.empty(n=0,directed=FALSE) + vertices(data$id)
+  g<-graph.empty(n=0,directed=FALSE) + vertices(data$ID)
 
   for (i in data$ID){
     for (j in data$ID){
