@@ -3,7 +3,7 @@ pointCollect <- function(pointfile, fov, plotting){
 
   #t<-0.2   #threshold for complete link clustering
   fov<-as.numeric(fov)
-  t<-fov
+  t<-max(0.2,fov)
   stop(t)
   id<-1:150  #vertex IDs
 
