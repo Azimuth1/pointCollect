@@ -37,34 +37,36 @@ pointCollect <- function(pointfile, fov, plotting){
   ###################
 
 
-  tryCatch({
-    plot(V(g)$X,V(g)$Y,cex=2,pch=".",col="blue")
-    collections<-NULL
-    #points(coords[maxCliqueIDs,2:3],col="green")
-    sceneCount<-0
-    while (gsize(g) >= 1){   #gsize gives number of edges
-      cl<-largest_cliques(g)[[1]]  #find complete subgraphs
-      minX<-min(cl$X)  #define the collection bounds...
-      maxX<-max(cl$X)
-      minY<-min(cl$Y)
-      maxY<-max(cl$Y)
-      collections<-rbind(collections, c(minX,minY,maxX,maxY))
+    tryCatch(
+      {
+        plot(V(g)$X,V(g)$Y,cex=2,pch=".",col="blue")
+        collections<-NULL
+        #points(coords[maxCliqueIDs,2:3],col="green")
+        sceneCount<-0
+        while (gsize(g) >= 1){   #gsize gives number of edges
+          cl<-largest_cliques(g)[[1]]  #find complete subgraphs
+          minX<-min(cl$X)  #define the collection bounds...
+          maxX<-max(cl$X)
+          minY<-min(cl$Y)
+          maxY<-max(cl$Y)
+          collections<-rbind(collections, c(minX,minY,maxX,maxY))
 
-      #id<-subset(id, !(id %in% cl))  #remove the IDs of the point targets just collected
+          #id<-subset(id, !(id %in% cl))  #remove the IDs of the point targets just collected
 
-      rect(minX, minY, maxX, maxY, border="red")
-      g<-delete_vertices(g,cl)
-      sceneCount<-sceneCount+1
+          rect(minX, minY, maxX, maxY, border="red")
+          g<-delete_vertices(g,cl)
+          sceneCount<-sceneCount+1
+        }
+      }, error = function(e)
+        {
+            stop(e);
+        }
+      }
     )
-    }, error = function(e){
-        stop(e);
-    }
-
   }else{
-  ###################
-  # PLOT SET TO FALSE
-  ###################
-    return(collections)
+        ###################
+        # PLOT SET TO FALSE
+        ###################
+        return(collections)
   }
-)
 }
