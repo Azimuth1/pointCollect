@@ -58,7 +58,7 @@ pointCollect <- function(pointfile, fov, plotting){
     )
     }, error = function(e){
         stop(e);
-    })
+    }
 
   }else{
   ###################
@@ -66,4 +66,5 @@ pointCollect <- function(pointfile, fov, plotting){
   ###################
     return(collections)
   }
+)
 }
