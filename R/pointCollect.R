@@ -55,6 +55,7 @@ pointCollect <- function(pointfile, fov, plotting){
       rect(minX, minY, maxX, maxY, border="red")
       g<-delete_vertices(g,cl)
       sceneCount<-sceneCount+1
+    )
     }, error = function(e){
         stop(e);
     })
