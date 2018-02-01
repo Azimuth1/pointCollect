@@ -57,7 +57,7 @@ pointCollect <- function(pointfile, fov, plotting){
           g<-delete_vertices(g,cl)
           sceneCount<-sceneCount+1
         }
-        text(paste0(sceneCount, " captures ",  nrow(data)-gorder(g), " of ", nrow(data), " targets"), min(data$X),max(data$Y))
+        title(paste0(sceneCount, " captures ",  nrow(data)-gorder(g), " of ", nrow(data), " targets"))
       }, error = function(e)
       {
           stop(e);
