@@ -13,42 +13,48 @@ pointCollect <- function(pointfile, fov, plotting){
   collections<-NULL
 
 
-coords<-data
+#coords<-data
   g<-graph.empty(n=0,directed=FALSE) + vertices(data$ID)
+  V(g)$X<-data$X
+  V(g)$Y<-data$Y
+  #V(g)$T<-data$T
 
-  for (i in data$ID){
-    for (j in data$ID){
+  for (i in 1:gorder(g)){
+    for (j in 1:gorder(g)){
       #if (((X[i]-X[j])^2+(Y[i]-Y[j])^2)<=t^2){
       if (i != j){
         if (max(abs(data$X[i]-data$X[j]),abs(data$Y[i]-data$Y[j]))<=fov){
-          g<-add.edges(g,c(data$ID[i],data$ID[j]))
+          g<-g+edge(V(g)[i]$name,V(g)[j]$name)
         }
       }
     }
   }
 
-  cl<-maximal.cliques(g,min=2)  #find complete subgraphs
-  #stop(vcount(g))
-
-
-  maxCliqueIDs<-cl[length(cl)][[1]]  #get the IDs of the largest complete subgraph
-  minX<-min(coords[maxCliqueIDs,2])  #define the collection bounds...
-  maxX<-max(coords[maxCliqueIDs,2])
-  minY<-min(coords[maxCliqueIDs,3])
-  maxY<-max(coords[maxCliqueIDs,3])
-  collections<-rbind(collections, c(minX,minY,maxX,maxY))
-
-  id<-subset(data$ID, !(data$ID %in% maxCliqueIDs))  #remove the IDs of the point targets just collected
 
   if(plotting==TRUE) {
   ###################
   # PLOT SET TO TRUE
   ###################
 
+
   tryCatch({
-      plot(coords[,2:3],cex=2,pch=".",col="blue",asp=1, main=paste0(length(cl)," scenes will capture ", 120, " targets."))
-      points(coords[maxCliqueIDs,2:3],col="green")
-      rect(minX, minY, maxX, maxY, border="red", )
+    plot(V(g)$X,V(g)$Y,cex=2,pch=".",col="blue")
+    collections<-NULL
+    #points(coords[maxCliqueIDs,2:3],col="green")
+    sceneCount<-0
+    while (gsize(g) >= 1){   #gsize gives number of edges
+      cl<-largest_cliques(g)[[1]]  #find complete subgraphs
+      minX<-min(cl$X)  #define the collection bounds...
+      maxX<-max(cl$X)
+      minY<-min(cl$Y)
+      maxY<-max(cl$Y)
+      collections<-rbind(collections, c(minX,minY,maxX,maxY))
+
+      #id<-subset(id, !(id %in% cl))  #remove the IDs of the point targets just collected
+
+      rect(minX, minY, maxX, maxY, border="red")
+      g<-delete_vertices(g,cl)
+      sceneCount<-sceneCount+1
     }, error = function(e){
         stop(e);
     })
