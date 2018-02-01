@@ -58,9 +58,8 @@ pointCollect <- function(pointfile, fov, plotting){
           sceneCount<-sceneCount+1
         }
       }, error = function(e)
-        {
-            stop(e);
-        }
+      {
+          stop(e);
       }
     )
   }else{
